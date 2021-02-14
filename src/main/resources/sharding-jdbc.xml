@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- ######################################################### 实际数据源配置 ######################################################### -->
+    <!-- 实际数据源1 -->
+    <bean id="ds0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.1.142/sharding_order?serverTimezone=Asia/Shanghai&amp;useSSL=false"/>
+        <property name="username" value="imooc"/>
+        <property name="password" value="Imooc@123456"/>
+    </bean>
+
+    <!-- 实际数据源2 -->
+    <bean id="ds1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.1.143/shard_order?serverTimezone=Asia/Shanghai&amp;useSSL=false"/>
+        <property name="username" value="imooc"/>
+        <property name="password" value="Imooc@123456"/>
+    </bean>
+    <!-- ######################################################### 实际数据源配置 ######################################################### -->
+
+    <!-- ######################################################### Sharding JDBC 配置 ######################################################### -->
+    <!-- 配置Sharding JDBC数据源 以及 逻辑表与分片规则 -->
+    <sharding:data-source id="sharding-data-source">
+        <sharding:sharding-rule data-source-names="ds0,ds1">
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order_$->{1..2}"
+                                     database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy"/>
+            </sharding:table-rules>
+        </sharding:sharding-rule>
+    </sharding:data-source>
+
+    <!-- 数据库分片规则: 根据user_id取模 -->
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ds$->{user_id % 2}"/>
+
+    <!-- 表分片规则: 根据id取模 -->
+    <sharding:inline-strategy id="tableStrategy" sharding-column="id" algorithm-expression="t_order_$->{id % 2 + 1}"/>
+    <!-- ######################################################### Sharding JDBC 配置 ######################################################### -->
+
+    <!-- ######################################################### MyBatis配置 ######################################################### -->
+    <!-- 配置MyBatis SqlSessionFactory -->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="sharding-data-source"/>
+        <property name="mapperLocations" value="classpath*:/mybatis/*.xml"/>
+    </bean>
+    <!-- ######################################################### MyBatis配置 ######################################################### -->
+</beans>
