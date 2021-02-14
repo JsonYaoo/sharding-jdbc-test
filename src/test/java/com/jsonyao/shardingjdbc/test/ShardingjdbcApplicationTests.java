@@ -166,7 +166,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrderItemSnowFlake(){
         Order order = new Order();
-        order.setUserId(20);
+        order.setUserId(88);
         order.setOrderAmount(BigDecimal.TEN);
         order.setOrderStatus(1);
         orderMapper.insertSelective(order);
