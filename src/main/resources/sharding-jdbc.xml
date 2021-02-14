@@ -47,7 +47,10 @@
     <!-- ######################################################### Sharding JDBC 配置 ######################################################### -->
     <!-- 配置读写分离负载规则 -->
     <master-slave:load-balance-algorithm id="msStrategy" type="RANDOM"/>
-    
+
+    <!-- 配置主键Key生成规则 -->
+    <sharding:key-generator id="uuid" column="order_id" type="UUID"/>
+
     <!-- 配置Sharding JDBC数据源 以及 逻辑表与分片规则 -->
     <sharding:data-source id="sharding-data-source">
         <sharding:sharding-rule data-source-names="ds0,slave0,ms1" default-data-source-name="ms0">
@@ -59,11 +62,11 @@
             <!-- 配置普通分片表 -->
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ms$->{0..1}.t_order_$->{1..2}"
-                                     database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy"/>
+                                     database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy" key-generator-ref="uuid"/>
 
                 <!-- 配置绑定表的分片表 -->
                 <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ms$->{0..1}.t_order_item_$->{1..2}"
-                                     database-strategy-ref="databaseStrategy" table-strategy-ref="tableOrderItemStrategy"/>
+                                     database-strategy-ref="databaseStrategy" table-strategy-ref="tableOrderItemStrategy" key-generator-ref="uuid"/>
             </sharding:table-rules>
 
             <!-- 配置广播表(全局表) -->
@@ -81,9 +84,14 @@
     <!-- 数据库分片规则: 根据user_id取模 -->
     <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id" algorithm-expression="ms$->{user_id % 2}"/>
 
+    <!-- 表分片规则: 根据UUID hashCode取模 -->
+    <bean id="mySharding" class="com.jsonyao.shardingjdbc.sharding.MySharding"></bean>
+    <sharding:standard-strategy id="tableStrategy" sharding-column="order_id" precise-algorithm-ref="mySharding"/>
+    <sharding:standard-strategy id="tableOrderItemStrategy" sharding-column="order_id" precise-algorithm-ref="mySharding"/>
+
     <!-- 表分片规则: 根据id取模 -->
-    <sharding:inline-strategy id="tableStrategy" sharding-column="order_id" algorithm-expression="t_order_$->{order_id % 2 + 1}"/>
-    <sharding:inline-strategy id="tableOrderItemStrategy" sharding-column="order_id" algorithm-expression="t_order_item_$->{order_id % 2 + 1}"/>
+    <!--<sharding:inline-strategy id="tableStrategy" sharding-column="order_id" algorithm-expression="t_order_$->{order_id % 2 + 1}"/>-->
+    <!--<sharding:inline-strategy id="tableOrderItemStrategy" sharding-column="order_id" algorithm-expression="t_order_item_$->{order_id % 2 + 1}"/>-->
     <!-- ######################################################### Sharding JDBC 配置 ######################################################### -->
 
     <!-- ######################################################### MyBatis配置 ######################################################### -->

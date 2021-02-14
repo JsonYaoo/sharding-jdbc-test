@@ -145,4 +145,18 @@ public class ShardingjdbcApplicationTests {
         order.setOrderStatus(1);
         orderMapper.insertSelective(order);
     }
+
+    /**
+     * 分布式ID: 测试Sharding JDBC UUID与绑定表
+     */
+    @Test
+    public void testOrderItemUUID(){
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(41);
+        orderItem.setOrderId("92935e77f27e4061ac441f17b94fba02");
+        orderItem.setProductName("测试商品");
+        orderItem.setNum(1);
+        orderItem.setUserId(15);
+        orderItemMapper.insert(orderItem);
+    }
 }
