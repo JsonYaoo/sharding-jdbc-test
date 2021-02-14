@@ -36,7 +36,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrder(){
         Order order = new Order();
-        order.setOrderId(1);
+        order.setOrderId("1");
         order.setUserId(19);
         order.setOrderAmount(BigDecimal.TEN);
         order.setOrderStatus(1);
@@ -49,7 +49,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrder2(){
         Order order = new Order();
-        order.setOrderId(4);
+        order.setOrderId("4");
         order.setUserId(20);
         order.setOrderAmount(BigDecimal.TEN);
         order.setOrderStatus(1);
@@ -62,7 +62,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testSelectOrder(){
         OrderExample orderExample = new OrderExample();
-        orderExample.createCriteria().andOrderIdEqualTo(4)
+        orderExample.createCriteria().andOrderIdEqualTo("4")
                 .andUserIdEqualTo(20);
         List<Order> orders = orderMapper.selectByExample(orderExample);
         orders.forEach(o -> System.out.println(o.getOrderId() + "-----" + o.getUserId()));
@@ -97,7 +97,7 @@ public class ShardingjdbcApplicationTests {
     public void testOrderItemInsert(){
         OrderItem orderItem = new OrderItem();
         orderItem.setId(41);
-        orderItem.setOrderId(4);
+        orderItem.setOrderId("4");
         orderItem.setProductName("测试商品");
         orderItem.setNum(1);
         orderItem.setUserId(20);
@@ -120,7 +120,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testMsOrderSelect(){
         OrderExample orderExample = new OrderExample();
-        orderExample.createCriteria().andOrderIdEqualTo(4)
+        orderExample.createCriteria().andOrderIdEqualTo("4")
                 .andUserIdEqualTo(20);
 
         for(int i = 0; i < 10; i++){
@@ -132,5 +132,17 @@ public class ShardingjdbcApplicationTests {
                 System.out.println("第"+ times +"次查询: orderAmount: " + o.getOrderAmount());
             });
         }
+    }
+
+    /**
+     * 分布式ID: 测试Sharding JDBC UUID
+     */
+    @Test
+    public void testOrderUUID(){
+        Order order = new Order();
+        order.setUserId(15);
+        order.setOrderAmount(BigDecimal.TEN);
+        order.setOrderStatus(1);
+        orderMapper.insertSelective(order);
     }
 }
