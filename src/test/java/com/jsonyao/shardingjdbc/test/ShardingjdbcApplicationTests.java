@@ -171,4 +171,18 @@ public class ShardingjdbcApplicationTests {
         order.setOrderStatus(1);
         orderMapper.insertSelective(order);
     }
+
+    /**
+     * 分布式ID: 测试Sharding JDBC 雪花算法ID与绑定表
+     */
+    @Test
+    public void testOrderSnowFlake(){
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(41);
+        orderItem.setOrderId(567798756077625345L);
+        orderItem.setProductName("测试商品");
+        orderItem.setNum(1);
+        orderItem.setUserId(20);
+        orderItemMapper.insert(orderItem);
+    }
 }
