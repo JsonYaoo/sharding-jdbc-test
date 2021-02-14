@@ -103,4 +103,25 @@ public class ShardingjdbcApplicationTests {
         orderItem.setUserId(19);
         orderItemMapper.insert(orderItem);
     }
+
+    /**
+     * 测试Sharding JDBC读写分离查询
+     * => 可见, Sharding JDBC读写分离只能从读库中查询, 而查询不到写库中的数据, 这点也和MyCat不同
+     */
+    @Test
+    public void testMsOrderSelect(){
+        OrderExample orderExample = new OrderExample();
+        orderExample.createCriteria().andOrderIdEqualTo(4)
+                .andUserIdEqualTo(20);
+
+        for(int i = 0; i < 10; i++){
+            final int times = i;
+            List<Order> orders = orderMapper.selectByExample(orderExample);
+            orders.forEach(o -> {
+                System.out.println("第"+ times +"次查询: orderId: " + o.getOrderId());
+                System.out.println("第"+ times +"次查询: userId: " + o.getUserId());
+                System.out.println("第"+ times +"次查询: orderAmount: " + o.getOrderAmount());
+            });
+        }
+    }
 }
