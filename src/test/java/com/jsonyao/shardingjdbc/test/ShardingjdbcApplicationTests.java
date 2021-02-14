@@ -96,11 +96,11 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrderItemInsert(){
         OrderItem orderItem = new OrderItem();
-        orderItem.setId(2);
-        orderItem.setOrderId(1);
+        orderItem.setId(41);
+        orderItem.setOrderId(4);
         orderItem.setProductName("测试商品");
         orderItem.setNum(1);
-        orderItem.setUserId(19);
+        orderItem.setUserId(20);
         orderItemMapper.insert(orderItem);
     }
 
