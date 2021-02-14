@@ -1,7 +1,9 @@
 package com.jsonyao.shardingjdbc.test;
 
 import com.jsonyao.shardingjdbc.ShardingjdbcApplication;
+import com.jsonyao.shardingjdbc.dao.AreaMapper;
 import com.jsonyao.shardingjdbc.dao.OrderMapper;
+import com.jsonyao.shardingjdbc.model.Area;
 import com.jsonyao.shardingjdbc.model.Order;
 import com.jsonyao.shardingjdbc.model.OrderExample;
 import org.junit.Test;
@@ -22,6 +24,9 @@ public class ShardingjdbcApplicationTests {
 
     @Resource
     private OrderMapper orderMapper;
+
+    @Resource
+    private AreaMapper areaMapper;
 
     /**
      * 测试Spring XML配置Sharding JDBC
@@ -59,5 +64,16 @@ public class ShardingjdbcApplicationTests {
                 .andUserIdEqualTo(20);
         List<Order> orders = orderMapper.selectByExample(orderExample);
         orders.forEach(o -> System.out.println(o.getId() + "-----" + o.getUserId()));
+    }
+
+    /**
+     * 测试Sharding JDBC全局表
+     */
+    @Test
+    public void testGlobalArea(){
+        Area area = new Area();
+        area.setId(1);
+        area.setName("北京");
+        areaMapper.insert(area);
     }
 }
