@@ -36,7 +36,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrder(){
         Order order = new Order();
-        order.setOrderId("1");
+        order.setOrderId(1L);
         order.setUserId(19);
         order.setOrderAmount(BigDecimal.TEN);
         order.setOrderStatus(1);
@@ -49,7 +49,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrder2(){
         Order order = new Order();
-        order.setOrderId("4");
+        order.setOrderId(4L);
         order.setUserId(20);
         order.setOrderAmount(BigDecimal.TEN);
         order.setOrderStatus(1);
@@ -62,7 +62,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testSelectOrder(){
         OrderExample orderExample = new OrderExample();
-        orderExample.createCriteria().andOrderIdEqualTo("4")
+        orderExample.createCriteria().andOrderIdEqualTo(4L)
                 .andUserIdEqualTo(20);
         List<Order> orders = orderMapper.selectByExample(orderExample);
         orders.forEach(o -> System.out.println(o.getOrderId() + "-----" + o.getUserId()));
@@ -97,7 +97,7 @@ public class ShardingjdbcApplicationTests {
     public void testOrderItemInsert(){
         OrderItem orderItem = new OrderItem();
         orderItem.setId(41);
-        orderItem.setOrderId("4");
+        orderItem.setOrderId(4L);
         orderItem.setProductName("测试商品");
         orderItem.setNum(1);
         orderItem.setUserId(20);
@@ -120,7 +120,7 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testMsOrderSelect(){
         OrderExample orderExample = new OrderExample();
-        orderExample.createCriteria().andOrderIdEqualTo("4")
+        orderExample.createCriteria().andOrderIdEqualTo(4L)
                 .andUserIdEqualTo(20);
 
         for(int i = 0; i < 10; i++){
@@ -153,10 +153,22 @@ public class ShardingjdbcApplicationTests {
     public void testOrderItemUUID(){
         OrderItem orderItem = new OrderItem();
         orderItem.setId(41);
-        orderItem.setOrderId("92935e77f27e4061ac441f17b94fba02");
+//        orderItem.setOrderId("92935e77f27e4061ac441f17b94fba02");
         orderItem.setProductName("测试商品");
         orderItem.setNum(1);
         orderItem.setUserId(15);
         orderItemMapper.insert(orderItem);
+    }
+
+    /**
+     * 分布式ID: 测试Sharding JDBC 雪花算法ID
+     */
+    @Test
+    public void testOrderItemSnowFlake(){
+        Order order = new Order();
+        order.setUserId(20);
+        order.setOrderAmount(BigDecimal.TEN);
+        order.setOrderStatus(1);
+        orderMapper.insertSelective(order);
     }
 }
