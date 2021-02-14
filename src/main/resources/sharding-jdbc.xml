@@ -40,10 +40,16 @@
     <!-- 配置Sharding JDBC数据源 以及 逻辑表与分片规则 -->
     <sharding:data-source id="sharding-data-source">
         <sharding:sharding-rule data-source-names="ds0,ds1">
+            <!-- 配置普通分片表 -->
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ds$->{0..1}.t_order_$->{1..2}"
                                      database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy"/>
             </sharding:table-rules>
+            
+            <!-- 配置广播表(全局表) -->
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="area"/>
+            </sharding:broadcast-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 

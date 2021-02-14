@@ -4,6 +4,7 @@ import com.jsonyao.shardingjdbc.ShardingjdbcApplication;
 import com.jsonyao.shardingjdbc.dao.AreaMapper;
 import com.jsonyao.shardingjdbc.dao.OrderMapper;
 import com.jsonyao.shardingjdbc.model.Area;
+import com.jsonyao.shardingjdbc.model.AreaExample;
 import com.jsonyao.shardingjdbc.model.Order;
 import com.jsonyao.shardingjdbc.model.OrderExample;
 import org.junit.Test;
@@ -67,13 +68,24 @@ public class ShardingjdbcApplicationTests {
     }
 
     /**
-     * 测试Sharding JDBC全局表
+     * 测试Sharding JDBC全局表插入
      */
     @Test
-    public void testGlobalArea(){
+    public void testGlobalInsert(){
         Area area = new Area();
-        area.setId(1);
-        area.setName("北京");
+        area.setId(2);
+        area.setName("上海");
         areaMapper.insert(area);
+    }
+
+    /**
+     * 测试Sharding JDBC全局表查询
+     */
+    @Test
+    public void testGlobalSelect(){
+        AreaExample areaExample = new AreaExample();
+        areaExample.createCriteria().andIdEqualTo(2);
+        List<Area> areas = areaMapper.selectByExample(areaExample);
+        areas.forEach(a -> System.out.println(a.getId() + "---" + a.getName()));
     }
 }
