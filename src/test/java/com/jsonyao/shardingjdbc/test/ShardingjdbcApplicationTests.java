@@ -178,11 +178,11 @@ public class ShardingjdbcApplicationTests {
     @Test
     public void testOrderSnowFlake(){
         OrderItem orderItem = new OrderItem();
-        orderItem.setId(41);
-        orderItem.setOrderId(567798756077625345L);
+        orderItem.setId(8);
+        orderItem.setOrderId(567801119214243841L);
         orderItem.setProductName("测试商品");
         orderItem.setNum(1);
-        orderItem.setUserId(20);
+        orderItem.setUserId(88);
         orderItemMapper.insert(orderItem);
     }
 }
