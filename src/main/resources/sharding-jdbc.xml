@@ -46,11 +46,11 @@
 
     <!-- ######################################################### Sharding JDBC 配置 ######################################################### -->
     <!-- 配置读写分离负载规则 -->
-    <master-slave:load-balance-algorithm id="msStrategy" type="random"/>
+    <master-slave:load-balance-algorithm id="msStrategy" type="RANDOM"/>
     
     <!-- 配置Sharding JDBC数据源 以及 逻辑表与分片规则 -->
     <sharding:data-source id="sharding-data-source">
-        <sharding:sharding-rule data-source-names="ds0,slave0,ms1">
+        <sharding:sharding-rule data-source-names="ds0,slave0,ms1" default-data-source-name="ms0">
             <!-- 读写分离配置 -->
             <sharding:master-slave-rules>
                 <sharding:master-slave-rule id="ms0" master-data-source-name="ds0" slave-data-source-names="slave0" strategy-ref="msStrategy"/>
@@ -60,17 +60,21 @@
             <sharding:table-rules>
                 <sharding:table-rule logic-table="t_order" actual-data-nodes="ms$->{0..1}.t_order_$->{1..2}"
                                      database-strategy-ref="databaseStrategy" table-strategy-ref="tableStrategy"/>
+
+                <!-- 配置绑定表的分片表 -->
+                <sharding:table-rule logic-table="t_order_item" actual-data-nodes="ms$->{0..1}.t_order_item_$->{1..2}"
+                                     database-strategy-ref="databaseStrategy" table-strategy-ref="tableOrderItemStrategy"/>
             </sharding:table-rules>
-            
+
             <!-- 配置广播表(全局表) -->
             <sharding:broadcast-table-rules>
                 <sharding:broadcast-table-rule table="area"/>
             </sharding:broadcast-table-rules>
             
-            <!--&lt;!&ndash; 配置绑定表(子表): 4.0.0-RC2版本会抛出空指针bug: 原因是源码中先创建了绑定表规则然后才是获取广播表 &ndash;&gt;-->
-            <!--<sharding:binding-table-rules>-->
-                <!--<sharding:binding-table-rule logic-tables="t_order,t_order_item"/>-->
-            <!--</sharding:binding-table-rules>-->
+            <!-- 配置绑定表(子表): 4.0.0-RC2版本会抛出空指针bug: 原因是源码中先创建了绑定表规则然后才是获取广播表 -->
+            <sharding:binding-table-rules>
+                <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
+            </sharding:binding-table-rules>
         </sharding:sharding-rule>
     </sharding:data-source>
 
@@ -79,6 +83,7 @@
 
     <!-- 表分片规则: 根据id取模 -->
     <sharding:inline-strategy id="tableStrategy" sharding-column="order_id" algorithm-expression="t_order_$->{order_id % 2 + 1}"/>
+    <sharding:inline-strategy id="tableOrderItemStrategy" sharding-column="order_id" algorithm-expression="t_order_item_$->{order_id % 2 + 1}"/>
     <!-- ######################################################### Sharding JDBC 配置 ######################################################### -->
 
     <!-- ######################################################### MyBatis配置 ######################################################### -->

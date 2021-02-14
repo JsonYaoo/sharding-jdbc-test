@@ -105,6 +105,15 @@ public class ShardingjdbcApplicationTests {
     }
 
     /**
+     * 测试Sharding JDBC绑定表查询
+     */
+    @Test
+    public void testOrderItemSelect(){
+        List<OrderItem> orderItems = orderItemMapper.selectByOrderIdUserId(1);
+        System.out.println(orderItems.size());
+    }
+
+    /**
      * 测试Sharding JDBC读写分离查询
      * => 可见, Sharding JDBC读写分离只能从读库中查询, 而查询不到写库中的数据, 这点也和MyCat不同
      */

@@ -4,6 +4,7 @@ import com.jsonyao.shardingjdbc.model.OrderItem;
 import com.jsonyao.shardingjdbc.model.OrderItemExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 public interface OrderItemMapper {
     /**
@@ -61,4 +62,12 @@ public interface OrderItemMapper {
      * @mbg.generated Sun Feb 14 13:11:40 CST 2021
      */
     int updateByExample(@Param("record") OrderItem record, @Param("example") OrderItemExample example);
+
+    /**
+     * 根据orderId查询OrderItem列表
+     * @param orderId
+     * @return
+     */
+    @Select("select * from t_order o inner join t_order_item oi on o.user_id = oi.user_id and o.order_id = oi.order_id where o.order_id = #{0}")
+    List<OrderItem> selectByOrderIdUserId(int orderId);
 }
