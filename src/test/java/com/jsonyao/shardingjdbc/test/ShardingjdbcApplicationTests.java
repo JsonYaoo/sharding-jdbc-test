@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -184,5 +185,27 @@ public class ShardingjdbcApplicationTests {
         orderItem.setNum(1);
         orderItem.setUserId(88);
         orderItemMapper.insert(orderItem);
+    }
+
+    /**
+     * 分布式事务: 测试Sharding JDBC分布式事务
+     * => 成功回滚
+     */
+    @Test
+    @Transactional
+    public void testOrderDistributeTransaction(){
+        Order order1 = new Order();
+        order1.setUserId(99);
+        order1.setOrderAmount(BigDecimal.TEN);
+        order1.setOrderStatus(1);
+        orderMapper.insertSelective(order1);
+
+        Order order2 = new Order();
+        order2.setUserId(100);
+        order2.setOrderAmount(BigDecimal.TEN);
+        order2.setOrderStatus(1);
+        orderMapper.insertSelective(order2);
+
+        throw new RuntimeException("测试分布式事务异常回滚");
     }
 }
